@@ -3,1082 +3,753 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WeatherPro - Clima Global</title>
+    <title>WeatherPro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { font-family: 'Inter', sans-serif; }
-        
-        body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-        
-        .glass {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: all 0.3s ease;
-        }
-        
-        .glass-card:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-        }
-        
-        .nav-btn {
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        
-        .nav-btn.active {
-            background: rgba(59, 130, 246, 0.3);
-            border-color: rgba(59, 130, 246, 0.5);
-            color: #60a5fa;
-        }
-        
-        .nav-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 20px;
-            height: 3px;
-            background: #60a5fa;
-            border-radius: 2px;
-        }
-        
-        .page {
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-        
-        .page.active {
-            display: block;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        .weather-icon-anim {
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        .temp-display {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: #60a5fa;
-            animation: spin 1s ease-in-out infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .forecast-item {
-            transition: all 0.3s ease;
-        }
-        
-        .forecast-item:hover {
-            background: rgba(255,255,255,0.1);
-            transform: scale(1.05);
-        }
-        
-        .progress-bar {
-            height: 6px;
-            border-radius: 3px;
-            background: rgba(255,255,255,0.1);
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            border-radius: 3px;
-            transition: width 0.8s ease;
-        }
-        
-        .search-suggestions {
-            max-height: 200px;
-            overflow-y: auto;
-        }
-        
-        .search-suggestions::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .search-suggestions::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.2);
-            border-radius: 3px;
-        }
-        
-        .aqi-good { color: #4ade80; }
-        .aqi-moderate { color: #fbbf24; }
-        .aqi-unhealthy { color: #f87171; }
-        .aqi-hazardous { color: #a855f7; }
-        
-        .sun-path {
-            position: relative;
-            height: 100px;
-            overflow: hidden;
-        }
-        
-        .sun-arc {
-            position: absolute;
-            width: 200px;
-            height: 200px;
-            border: 2px dashed rgba(251, 191, 36, 0.3);
-            border-radius: 50%;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        
-        .sun-dot {
-            position: absolute;
-            width: 16px;
-            height: 16px;
-            background: #fbbf24;
-            border-radius: 50%;
-            box-shadow: 0 0 20px #fbbf24;
-        }
-        
-        .chart-container {
-            position: relative;
-            height: 200px;
-        }
+        :root { --bg-primary:#0f172a; --bg-secondary:#1e293b; --bg-card:rgba(255,255,255,0.08); --bg-card-hover:rgba(255,255,255,0.12); --text-primary:#fff; --text-secondary:#94a3b8; --text-muted:#64748b; --border-color:rgba(255,255,255,0.1); --accent:#3b82f6; --accent-hover:#2563eb; }
+        body.light { --bg-primary:#f1f5f9; --bg-secondary:#e2e8f0; --bg-card:rgba(255,255,255,0.7); --bg-card-hover:rgba(255,255,255,0.9); --text-primary:#1e293b; --text-secondary:#475569; --text-muted:#94a3b8; --border-color:rgba(0,0,0,0.08); --accent:#3b82f6; --accent-hover:#2563eb; }
+        body { background:var(--bg-primary); color:var(--text-primary); min-height:100vh; overflow-x:hidden; transition:background 0.3s ease,color 0.3s ease; }
+        .glass { background:var(--bg-card); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border:1px solid var(--border-color); transition:all 0.3s ease; }
+        .glass-card { background:var(--bg-card); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid var(--border-color); transition:all 0.3s ease; }
+        .glass-card:hover { background:var(--bg-card-hover); transform:translateY(-2px); box-shadow:0 10px 40px rgba(0,0,0,0.15); }
+        .nav-btn { transition:all 0.3s ease; position:relative; color:var(--text-secondary); }
+        .nav-btn.active { background:rgba(59,130,246,0.2); border-color:rgba(59,130,246,0.4); color:var(--accent); }
+        .nav-btn.active::after { content:''; position:absolute; bottom:-4px; left:50%; transform:translateX(-50%); width:20px; height:3px; background:var(--accent); border-radius:2px; }
+        .page { display:none; animation:fadeIn 0.5s ease; }
+        .page.active { display:block; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+        .weather-icon-anim { animation:float 3s ease-in-out infinite; }
+        .temp-display { background:linear-gradient(135deg,#fbbf24,#f59e0b); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+        .loading { display:inline-block; width:20px; height:20px; border:3px solid rgba(255,255,255,0.3); border-radius:50%; border-top-color:var(--accent); animation:spin 1s ease-in-out infinite; }
+        @keyframes spin { to{transform:rotate(360deg)} }
+        .forecast-item,.hourly-item { transition:all 0.3s ease; }
+        .forecast-item:hover,.hourly-item:hover { background:var(--bg-card-hover); transform:scale(1.02); }
+        .progress-bar { height:6px; border-radius:3px; background:var(--bg-secondary); overflow:hidden; }
+        .progress-fill { height:100%; border-radius:3px; transition:width 0.8s ease; }
+        .search-suggestions { max-height:200px; overflow-y:auto; }
+        .search-suggestions::-webkit-scrollbar { width:6px; }
+        .search-suggestions::-webkit-scrollbar-thumb { background:var(--text-muted); border-radius:3px; }
+        .settings-modal { position:fixed; inset:0; z-index:100; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); }
+        .settings-modal.open { display:flex; }
+        .settings-content { background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:20px; padding:24px; width:90%; max-width:400px; animation:slideUp 0.3s ease; }
+        @keyframes slideUp { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
+        .toggle-switch { position:relative; width:50px; height:26px; border-radius:13px; background:var(--bg-secondary); border:2px solid var(--border-color); cursor:pointer; transition:all 0.3s ease; }
+        .toggle-switch.on { background:var(--accent); border-color:var(--accent); }
+        .toggle-switch::after { content:''; position:absolute; width:20px; height:20px; border-radius:50%; background:white; top:1px; left:1px; transition:all 0.3s ease; box-shadow:0 2px 4px rgba(0,0,0,0.2); }
+        .toggle-switch.on::after { left:25px; }
+        .hourly-scroll { display:flex; gap:12px; overflow-x:auto; padding-bottom:8px; scrollbar-width:thin; scrollbar-color:var(--text-muted) transparent; }
+        .hourly-scroll::-webkit-scrollbar { height:6px; }
+        .hourly-scroll::-webkit-scrollbar-thumb { background:var(--text-muted); border-radius:3px; }
+        .hourly-card { min-width:100px; text-align:center; padding:12px 8px; border-radius:16px; background:var(--bg-card); border:1px solid var(--border-color); transition:all 0.3s ease; }
+        .hourly-card:hover { background:var(--bg-card-hover); transform:translateY(-2px); }
+        .rain-bar { height:4px; border-radius:2px; background:var(--bg-secondary); overflow:hidden; margin-top:4px; }
+        .rain-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,#60a5fa,#3b82f6); transition:width 0.5s ease; }
+        .sun-path { position:relative; height:100px; overflow:hidden; }
+        .sun-arc { position:absolute; width:200px; height:200px; border:2px dashed rgba(251,191,36,0.3); border-radius:50%; top:20px; left:50%; transform:translateX(-50%); }
+        .sun-dot { position:absolute; width:16px; height:16px; background:#fbbf24; border-radius:50%; box-shadow:0 0 20px #fbbf24; }
+        .chart-container { position:relative; height:200px; display:flex; align-items:flex-end; gap:8px; padding:0 8px; }
+        body.light .loading { border-color:rgba(0,0,0,0.1); border-top-color:var(--accent); }
+        .lang-btn { padding:8px 16px; border-radius:10px; border:2px solid var(--border-color); background:transparent; color:var(--text-secondary); cursor:pointer; transition:all 0.3s ease; font-weight:500; }
+        .lang-btn.active { border-color:var(--accent); background:rgba(59,130,246,0.1); color:var(--accent); }
+        .lang-btn:hover { border-color:var(--accent); }
     </style>
 </head>
-<body class="text-white">
-    <!-- Container Principal -->
+<body>
+    <div id="settingsModal" class="settings-modal" onclick="closeSettings(event)">
+        <div class="settings-content" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="settingsTitle" class="text-xl font-bold">⚙️ Configuracoes</h3>
+                <button onclick="toggleSettings()" class="text-2xl hover:opacity-70 transition-colors" style="color:var(--text-muted)"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="mb-6">
+                <p id="langLabel" class="text-sm font-medium mb-3" style="color:var(--text-secondary)">Idioma</p>
+                <div class="flex gap-3">
+                    <button onclick="setLanguage('pt')" id="btn-pt" class="lang-btn active">Portugues</button>
+                    <button onclick="setLanguage('en')" id="btn-en" class="lang-btn">English</button>
+                </div>
+            </div>
+            <div class="flex justify-between items-center">
+                <div>
+                    <p id="themeLabel" class="text-sm font-medium" style="color:var(--text-secondary)">Tema</p>
+                    <p id="themeDesc" class="text-xs mt-1" style="color:var(--text-muted)">Escuro</p>
+                </div>
+                <div onclick="toggleTheme()" id="themeToggle" class="toggle-switch"></div>
+            </div>
+        </div>
+    </div>
+
     <div class="min-h-screen flex flex-col">
-        
-        <!-- Header com Busca -->
         <header class="glass sticky top-0 z-50 px-4 py-4">
             <div class="max-w-4xl mx-auto">
-                <div class="flex items-center gap-3 mb-3">
-                    <i class="fas fa-cloud-sun text-3xl text-blue-400"></i>
-                    <h1 class="text-2xl font-bold tracking-tight">Weather<span class="text-blue-400">Pro</span></h1>
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-cloud-sun text-3xl" style="color:var(--accent)"></i>
+                        <h1 class="text-2xl font-bold tracking-tight">Weather<span style="color:var(--accent)">Pro</span></h1>
+                    </div>
+                    <button onclick="toggleSettings()" class="w-10 h-10 rounded-xl glass flex items-center justify-center hover:opacity-80 transition-all" title="Configuracoes">
+                        <i class="fas fa-cog text-lg" style="color:var(--text-secondary)"></i>
+                    </button>
                 </div>
-                
                 <div class="relative">
                     <div class="flex gap-2">
                         <div class="relative flex-1">
-                            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                            <input id="cityInput" type="text" placeholder="Buscar qualquer cidade do mundo..." 
-                                   class="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
-                                   onkeypress="if(event.key==='Enter') searchCity()">
+                            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2" style="color:var(--text-muted)"></i>
+                            <input id="cityInput" type="text" placeholder="Buscar qualquer cidade..." class="w-full pl-10 pr-4 py-3 rounded-xl outline-none focus:ring-2 transition-all" style="background:var(--bg-card);border:1px solid var(--border-color);color:var(--text-primary)" onkeypress="if(event.key==='Enter')searchCity()">
                             <div id="suggestions" class="absolute top-full left-0 right-0 mt-1 glass rounded-xl search-suggestions hidden z-50"></div>
                         </div>
-                        <button onclick="searchCity()" 
-                                class="px-6 py-3 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-medium transition-all flex items-center gap-2">
-                            <span id="searchBtnText">Buscar</span>
-                            <span id="searchLoader" class="loading hidden"></span>
-                        </button>
-                        <button onclick="getLocation()" 
-                                class="px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all" title="Usar minha localização">
-                            <i class="fas fa-location-arrow"></i>
-                        </button>
+                        <button onclick="searchCity()" class="px-6 py-3 rounded-xl text-white font-medium transition-all flex items-center gap-2" style="background:var(--accent)"><span id="searchBtnText">Buscar</span><span id="searchLoader" class="loading hidden"></span></button>
+                        <button onclick="getLocation()" class="px-4 py-3 rounded-xl transition-all" style="background:var(--bg-card);border:1px solid var(--border-color)" title="Localizacao"><i class="fas fa-location-arrow" style="color:var(--text-secondary)"></i></button>
                     </div>
                 </div>
-                
-                <!-- Cidades Favoritas -->
-                <div id="favorites" class="flex gap-2 mt-3 flex-wrap hidden">
-                    <!-- Preenchido via JS -->
-                </div>
+                <div id="favorites" class="flex gap-2 mt-3 flex-wrap hidden"></div>
             </div>
         </header>
 
-        <!-- Navegação -->
-        <nav class="glass border-t border-white/5 sticky top-[140px] z-40">
+        <nav class="glass border-t sticky z-40" style="top:140px;border-color:var(--border-color)">
             <div class="max-w-4xl mx-auto px-4 py-3">
-                <div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                    <button onclick="showPage('current')" id="nav-current" class="nav-btn active px-4 py-2 rounded-lg glass text-sm font-medium whitespace-nowrap flex items-center gap-2">
-                        <i class="fas fa-cloud"></i> Clima Atual
-                    </button>
-                    <button onclick="showPage('forecast')" id="nav-forecast" class="nav-btn px-4 py-2 rounded-lg glass text-sm font-medium whitespace-nowrap flex items-center gap-2">
-                        <i class="fas fa-calendar-alt"></i> Previsão 5 Dias
-                    </button>
-                    <button onclick="showPage('details')" id="nav-details" class="nav-btn px-4 py-2 rounded-lg glass text-sm font-medium whitespace-nowrap flex items-center gap-2">
-                        <i class="fas fa-chart-line"></i> Detalhes
-                    </button>
-                    <button onclick="showPage('air')" id="nav-air" class="nav-btn px-4 py-2 rounded-lg glass text-sm font-medium whitespace-nowrap flex items-center gap-2">
-                        <i class="fas fa-wind"></i> Qualidade do Ar
-                    </button>
-                    <button onclick="showPage('sun')" id="nav-sun" class="nav-btn px-4 py-2 rounded-lg glass text-sm font-medium whitespace-nowrap flex items-center gap-2">
-                        <i class="fas fa-sun"></i> Sol & Lua
-                    </button>
+                <div class="flex gap-2 overflow-x-auto pb-1" style="scrollbar-width:none">
+                    <button onclick="showPage('current')" id="nav-current" class="nav-btn active px-4 py-2 rounded-lg glass text-sm font-medium whitespace-nowrap flex items-center gap-2"><i class="fas fa-cloud"></i><span id="nav-current-text">Clima</span></button>
+                    <button onclick="showPage('hourly')" id="nav-hourly" class="nav-btn px-4 py-2 rounded-lg glass text-sm font-medium whitespace-nowrap flex items-center gap-2"><i class="fas fa-clock"></i><span id="nav-hourly-text">Horas</span></button>
+                    <button onclick="showPage('forecast')" id="nav-forecast" class="nav-btn px-4 py-2 rounded-lg glass text-sm font-medium whitespace-nowrap flex items-center gap-2"><i class="fas fa-calendar-alt"></i><span id="nav-forecast-text">5 Dias</span></button>
+                    <button onclick="showPage('details')" id="nav-details" class="nav-btn px-4 py-2 rounded-lg glass text-sm font-medium whitespace-nowrap flex items-center gap-2"><i class="fas fa-chart-line"></i><span id="nav-details-text">Detalhes</span></button>
+                    <button onclick="showPage('air')" id="nav-air" class="nav-btn px-4 py-2 rounded-lg glass text-sm font-medium whitespace-nowrap flex items-center gap-2"><i class="fas fa-wind"></i><span id="nav-air-text">Ar</span></button>
+                    <button onclick="showPage('sun')" id="nav-sun" class="nav-btn px-4 py-2 rounded-lg glass text-sm font-medium whitespace-nowrap flex items-center gap-2"><i class="fas fa-sun"></i><span id="nav-sun-text">Sol</span></button>
                 </div>
             </div>
         </nav>
 
-        <!-- Conteúdo -->
         <main class="flex-1 px-4 py-6 pb-24">
             <div class="max-w-4xl mx-auto">
-                
-                <!-- Info da Cidade -->
                 <div id="cityInfo" class="text-center mb-6 hidden">
                     <h2 id="cityName" class="text-3xl font-bold"></h2>
-                    <p id="countryName" class="text-gray-400 mt-1"></p>
-                    <p id="localTime" class="text-blue-300 text-sm mt-1"></p>
-                    <div class="flex justify-center gap-4 mt-2 text-sm text-gray-400">
-                        <span><i class="fas fa-map-marker-alt mr-1"></i>Lat: <span id="latVal"></span></span>
-                        <span><i class="fas fa-map-marker-alt mr-1"></i>Lon: <span id="lonVal"></span></span>
+                    <p id="countryName" class="mt-1" style="color:var(--text-secondary)"></p>
+                    <p id="localTime" class="text-sm mt-1" style="color:var(--accent)"></p>
+                    <div class="flex justify-center gap-4 mt-2 text-sm" style="color:var(--text-muted)">
+                        <span><i class="fas fa-map-marker-alt mr-1"></i>Lat:<span id="latVal"></span></span>
+                        <span><i class="fas fa-map-marker-alt mr-1"></i>Lon:<span id="lonVal"></span></span>
                     </div>
                 </div>
 
-                <!-- Página 1: Clima Atual -->
                 <div id="page-current" class="page active">
                     <div id="currentEmpty" class="text-center py-20">
-                        <i class="fas fa-cloud-sun text-6xl text-white/20 mb-4"></i>
-                        <p class="text-gray-400 text-lg">Busque uma cidade para ver o clima atual</p>
+                        <i class="fas fa-cloud-sun text-6xl mb-4" style="color:var(--text-muted);opacity:0.3"></i>
+                        <p class="text-lg" id="currentEmptyText" style="color:var(--text-muted)">Busque uma cidade</p>
                     </div>
-                    
                     <div id="currentContent" class="hidden">
-                        <!-- Card Principal -->
                         <div class="glass rounded-2xl p-8 text-center mb-6 relative overflow-hidden">
                             <div class="absolute top-0 right-0 p-4">
-                                <button onclick="toggleFavorite()" id="favBtn" class="text-2xl text-white/30 hover:text-yellow-400 transition-all">
-                                    <i class="far fa-star"></i>
-                                </button>
+                                <button onclick="toggleFavorite()" id="favBtn" class="text-2xl transition-all" style="color:var(--text-muted)"><i class="far fa-star"></i></button>
                             </div>
-                            
-                            <div class="weather-icon-anim mb-4">
-                                <img id="weatherIcon" src="" alt="Clima" class="w-32 h-32 mx-auto drop-shadow-2xl">
-                            </div>
-                            
+                            <div class="weather-icon-anim mb-4"><img id="weatherIcon" src="" alt="" class="w-32 h-32 mx-auto drop-shadow-2xl"></div>
                             <div class="temp-display text-7xl font-bold mb-2" id="currentTemp"></div>
-                            <p id="weatherDesc" class="text-xl text-gray-300 capitalize mb-4"></p>
-                            
+                            <p id="weatherDesc" class="text-xl capitalize mb-4" style="color:var(--text-secondary)"></p>
                             <div class="flex justify-center gap-6 text-sm">
-                                <span class="flex items-center gap-1 text-blue-300">
-                                    <i class="fas fa-temperature-low"></i>
-                                    Mín: <span id="tempMin"></span>°
-                                </span>
-                                <span class="flex items-center gap-1 text-red-300">
-                                    <i class="fas fa-temperature-high"></i>
-                                    Máx: <span id="tempMax"></span>°
-                                </span>
+                                <span class="flex items-center gap-1" style="color:#60a5fa"><i class="fas fa-temperature-low"></i><span id="minLabel">Min</span>:<span id="tempMin"></span>°</span>
+                                <span class="flex items-center gap-1" style="color:#f87171"><i class="fas fa-temperature-high"></i><span id="maxLabel">Max</span>:<span id="tempMax"></span>°</span>
                             </div>
-                            
-                            <p id="feelsLike" class="text-gray-400 mt-3 text-sm"></p>
+                            <p id="feelsLike" class="mt-3 text-sm" style="color:var(--text-muted)"></p>
                         </div>
-
-                        <!-- Grid de Info Rápida -->
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                            <div class="glass-card rounded-xl p-4 text-center">
-                                <i class="fas fa-tint text-blue-400 text-2xl mb-2"></i>
-                                <p class="text-gray-400 text-xs">Umidade</p>
-                                <p id="humidity" class="text-xl font-semibold"></p>
-                            </div>
-                            <div class="glass-card rounded-xl p-4 text-center">
-                                <i class="fas fa-tachometer-alt text-green-400 text-2xl mb-2"></i>
-                                <p class="text-gray-400 text-xs">Pressão</p>
-                                <p id="pressure" class="text-xl font-semibold"></p>
-                            </div>
-                            <div class="glass-card rounded-xl p-4 text-center">
-                                <i class="fas fa-wind text-gray-400 text-2xl mb-2"></i>
-                                <p class="text-gray-400 text-xs">Vento</p>
-                                <p id="windSpeed" class="text-xl font-semibold"></p>
-                            </div>
-                            <div class="glass-card rounded-xl p-4 text-center">
-                                <i class="fas fa-eye text-purple-400 text-2xl mb-2"></i>
-                                <p class="text-gray-400 text-xs">Visibilidade</p>
-                                <p id="visibility" class="text-xl font-semibold"></p>
-                            </div>
+                            <div class="glass-card rounded-xl p-4 text-center"><i class="fas fa-tint text-2xl mb-2" style="color:#60a5fa"></i><p class="text-xs" id="humidityLabel" style="color:var(--text-muted)">Umidade</p><p id="humidity" class="text-xl font-semibold"></p></div>
+                            <div class="glass-card rounded-xl p-4 text-center"><i class="fas fa-tachometer-alt text-2xl mb-2" style="color:#4ade80"></i><p class="text-xs" id="pressureLabel" style="color:var(--text-muted)">Pressao</p><p id="pressure" class="text-xl font-semibold"></p></div>
+                            <div class="glass-card rounded-xl p-4 text-center"><i class="fas fa-wind text-2xl mb-2" style="color:var(--text-secondary)"></i><p class="text-xs" id="windLabel" style="color:var(--text-muted)">Vento</p><p id="windSpeed" class="text-xl font-semibold"></p></div>
+                            <div class="glass-card rounded-xl p-4 text-center"><i class="fas fa-eye text-2xl mb-2" style="color:#a78bfa"></i><p class="text-xs" id="visibilityLabel" style="color:var(--text-muted)">Visibilidade</p><p id="visibility" class="text-xl font-semibold"></p></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Página 2: Previsão 5 Dias -->
+                <div id="page-hourly" class="page">
+                    <div id="hourlyEmpty" class="text-center py-20">
+                        <i class="fas fa-clock text-6xl mb-4" style="color:var(--text-muted);opacity:0.3"></i>
+                        <p class="text-lg" id="hourlyEmptyText" style="color:var(--text-muted)">Busque uma cidade</p>
+                    </div>
+                    <div id="hourlyContent" class="hidden">
+                        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="fas fa-clock" style="color:var(--accent)"></i><span id="hourlyTitle">Proximas 24 Horas</span></h3>
+                        <div id="hourlyList" class="hourly-scroll"></div>
+                    </div>
+                </div>
+
                 <div id="page-forecast" class="page">
                     <div id="forecastEmpty" class="text-center py-20">
-                        <i class="fas fa-calendar-alt text-6xl text-white/20 mb-4"></i>
-                        <p class="text-gray-400 text-lg">Busque uma cidade para ver a previsão</p>
+                        <i class="fas fa-calendar-alt text-6xl mb-4" style="color:var(--text-muted);opacity:0.3"></i>
+                        <p class="text-lg" id="forecastEmptyText" style="color:var(--text-muted)">Busque uma cidade</p>
                     </div>
-                    
                     <div id="forecastContent" class="hidden space-y-3">
-                        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
-                            <i class="fas fa-calendar-week text-blue-400"></i>
-                            Previsão para 5 Dias
-                        </h3>
+                        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="fas fa-calendar-week" style="color:var(--accent)"></i><span id="forecastTitle">Previsao 5 Dias</span></h3>
                         <div id="forecastList" class="space-y-3"></div>
-                        
-                        <!-- Gráfico de Temperaturas -->
                         <div class="glass rounded-2xl p-6 mt-6">
-                            <h4 class="text-sm font-medium text-gray-400 mb-4">Variação de Temperatura</h4>
+                            <h4 class="text-sm font-medium mb-4" id="chartTitle" style="color:var(--text-muted)">Variacao de Temperatura</h4>
                             <div class="chart-container" id="tempChart"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Página 3: Detalhes -->
                 <div id="page-details" class="page">
                     <div id="detailsEmpty" class="text-center py-20">
-                        <i class="fas fa-chart-line text-6xl text-white/20 mb-4"></i>
-                        <p class="text-gray-400 text-lg">Busque uma cidade para ver os detalhes</p>
+                        <i class="fas fa-chart-line text-6xl mb-4" style="color:var(--text-muted);opacity:0.3"></i>
+                        <p class="text-lg" id="detailsEmptyText" style="color:var(--text-muted)">Busque uma cidade</p>
                     </div>
-                    
                     <div id="detailsContent" class="hidden space-y-4">
-                        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
-                            <i class="fas fa-info-circle text-blue-400"></i>
-                            Detalhes Avançados
-                        </h3>
-                        
+                        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="fas fa-info-circle" style="color:var(--accent)"></i><span id="detailsTitle">Detalhes</span></h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- Sensação Térmica -->
                             <div class="glass-card rounded-xl p-5">
-                                <div class="flex items-center gap-3 mb-3">
-                                    <div class="w-10 h-10 rounded-lg bg-orange-500/20 flex items-center justify-center">
-                                        <i class="fas fa-thermometer-half text-orange-400"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-400 text-xs">Sensação Térmica</p>
-                                        <p id="detailFeelsLike" class="text-2xl font-bold"></p>
-                                    </div>
-                                </div>
-                                <p class="text-xs text-gray-500 mt-2">Baseada na umidade e velocidade do vento</p>
+                                <div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(251,146,60,0.2)"><i class="fas fa-thermometer-half" style="color:#fb923c"></i></div><div><p class="text-xs" id="feelsLikeLabel" style="color:var(--text-muted)">Sensacao</p><p id="detailFeelsLike" class="text-2xl font-bold"></p></div></div>
+                                <p class="text-xs mt-2" id="feelsLikeDesc" style="color:var(--text-muted)">Baseada na umidade e vento</p>
                             </div>
-                            
-                            <!-- Umidade Detalhada -->
                             <div class="glass-card rounded-xl p-5">
-                                <div class="flex items-center gap-3 mb-3">
-                                    <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                                        <i class="fas fa-tint text-blue-400"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-400 text-xs">Umidade</p>
-                                        <p id="detailHumidity" class="text-2xl font-bold"></p>
-                                    </div>
-                                </div>
-                                <div class="progress-bar mt-2">
-                                    <div id="humidityBar" class="progress-fill bg-blue-500" style="width: 0%"></div>
-                                </div>
+                                <div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(96,165,250,0.2)"><i class="fas fa-tint" style="color:#60a5fa"></i></div><div><p class="text-xs" id="detailHumidityLabel" style="color:var(--text-muted)">Umidade</p><p id="detailHumidity" class="text-2xl font-bold"></p></div></div>
+                                <div class="progress-bar mt-2"><div id="humidityBar" class="progress-fill" style="width:0%;background:#60a5fa"></div></div>
                             </div>
-                            
-                            <!-- Pressão -->
                             <div class="glass-card rounded-xl p-5">
-                                <div class="flex items-center gap-3 mb-3">
-                                    <div class="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center">
-                                        <i class="fas fa-tachometer-alt text-green-400"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-400 text-xs">Pressão Atmosférica</p>
-                                        <p id="detailPressure" class="text-2xl font-bold"></p>
-                                    </div>
-                                </div>
+                                <div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(74,222,128,0.2)"><i class="fas fa-tachometer-alt" style="color:#4ade80"></i></div><div><p class="text-xs" id="detailPressureLabel" style="color:var(--text-muted)">Pressao</p><p id="detailPressure" class="text-2xl font-bold"></p></div></div>
                                 <p id="pressureStatus" class="text-xs mt-2"></p>
                             </div>
-                            
-                            <!-- Vento -->
                             <div class="glass-card rounded-xl p-5">
-                                <div class="flex items-center gap-3 mb-3">
-                                    <div class="w-10 h-10 rounded-lg bg-gray-500/20 flex items-center justify-center">
-                                        <i class="fas fa-wind text-gray-400"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-400 text-xs">Vento</p>
-                                        <p id="detailWind" class="text-2xl font-bold"></p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-2 mt-2">
-                                    <i id="windDirIcon" class="fas fa-arrow-up text-gray-400 transition-transform"></i>
-                                    <span id="windDir" class="text-xs text-gray-500"></span>
-                                </div>
+                                <div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(148,163,184,0.2)"><i class="fas fa-wind" style="color:#94a3b8"></i></div><div><p class="text-xs" id="detailWindLabel" style="color:var(--text-muted)">Vento</p><p id="detailWind" class="text-2xl font-bold"></p></div></div>
+                                <div class="flex items-center gap-2 mt-2"><i id="windDirIcon" class="fas fa-arrow-up transition-transform"></i><span id="windDir" class="text-xs" style="color:var(--text-muted)"></span></div>
                             </div>
-                            
-                            <!-- Visibilidade -->
                             <div class="glass-card rounded-xl p-5">
-                                <div class="flex items-center gap-3 mb-3">
-                                    <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center">
-                                        <i class="fas fa-eye text-purple-400"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-400 text-xs">Visibilidade</p>
-                                        <p id="detailVisibility" class="text-2xl font-bold"></p>
-                                    </div>
-                                </div>
+                                <div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(167,139,250,0.2)"><i class="fas fa-eye" style="color:#a78bfa"></i></div><div><p class="text-xs" id="detailVisibilityLabel" style="color:var(--text-muted)">Visibilidade</p><p id="detailVisibility" class="text-2xl font-bold"></p></div></div>
                                 <p id="visibilityStatus" class="text-xs mt-2"></p>
                             </div>
-                            
-                            <!-- Nuvens -->
                             <div class="glass-card rounded-xl p-5">
-                                <div class="flex items-center gap-3 mb-3">
-                                    <div class="w-10 h-10 rounded-lg bg-gray-400/20 flex items-center justify-center">
-                                        <i class="fas fa-cloud text-gray-300"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-400 text-xs">Cobertura de Nuvens</p>
-                                        <p id="detailClouds" class="text-2xl font-bold"></p>
-                                    </div>
-                                </div>
-                                <div class="progress-bar mt-2">
-                                    <div id="cloudsBar" class="progress-fill bg-gray-400" style="width: 0%"></div>
-                                </div>
+                                <div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(148,163,184,0.2)"><i class="fas fa-cloud" style="color:#94a3b8"></i></div><div><p class="text-xs" id="cloudsLabel" style="color:var(--text-muted)">Nuvens</p><p id="detailClouds" class="text-2xl font-bold"></p></div></div>
+                                <div class="progress-bar mt-2"><div id="cloudsBar" class="progress-fill" style="width:0%;background:#94a3b8"></div></div>
                             </div>
-                            
-                            <!-- Rajadas -->
                             <div class="glass-card rounded-xl p-5">
-                                <div class="flex items-center gap-3 mb-3">
-                                    <div class="w-10 h-10 rounded-lg bg-red-500/20 flex items-center justify-center">
-                                        <i class="fas fa-bolt text-red-400"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-400 text-xs">Rajadas de Vento</p>
-                                        <p id="detailGusts" class="text-2xl font-bold"></p>
-                                    </div>
-                                </div>
-                                <p class="text-xs text-gray-500 mt-2">Velocidade máxima das rajadas</p>
+                                <div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(248,113,113,0.2)"><i class="fas fa-bolt" style="color:#f87171"></i></div><div><p class="text-xs" id="gustsLabel" style="color:var(--text-muted)">Rajadas</p><p id="detailGusts" class="text-2xl font-bold"></p></div></div>
+                                <p class="text-xs mt-2" id="gustsDesc" style="color:var(--text-muted)">Velocidade maxima</p>
                             </div>
-                            
-                            <!-- Chuva (última hora) -->
                             <div class="glass-card rounded-xl p-5">
-                                <div class="flex items-center gap-3 mb-3">
-                                    <div class="w-10 h-10 rounded-lg bg-blue-600/20 flex items-center justify-center">
-                                        <i class="fas fa-cloud-rain text-blue-500"></i>
-                                    </div>
-                                    <div>
-                                        <p class="text-gray-400 text-xs">Chuva (última 1h)</p>
-                                        <p id="detailRain" class="text-2xl font-bold"></p>
-                                    </div>
-                                </div>
-                                <p class="text-xs text-gray-500 mt-2">Volume de precipitação</p>
+                                <div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:rgba(37,99,235,0.2)"><i class="fas fa-cloud-rain" style="color:#2563eb"></i></div><div><p class="text-xs" id="rainLabel" style="color:var(--text-muted)">Chuva (1h)</p><p id="detailRain" class="text-2xl font-bold"></p></div></div>
+                                <p class="text-xs mt-2" id="rainDesc" style="color:var(--text-muted)">Volume</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Página 4: Qualidade do Ar -->
                 <div id="page-air" class="page">
                     <div id="airEmpty" class="text-center py-20">
-                        <i class="fas fa-wind text-6xl text-white/20 mb-4"></i>
-                        <p class="text-gray-400 text-lg">Busque uma cidade para ver a qualidade do ar</p>
+                        <i class="fas fa-wind text-6xl mb-4" style="color:var(--text-muted);opacity:0.3"></i>
+                        <p class="text-lg" id="airEmptyText" style="color:var(--text-muted)">Busque uma cidade</p>
                     </div>
-                    
                     <div id="airContent" class="hidden space-y-4">
-                        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
-                            <i class="fas fa-lungs text-blue-400"></i>
-                            Qualidade do Ar
-                        </h3>
-                        
-                        <!-- AQI Principal -->
+                        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="fas fa-lungs" style="color:var(--accent)"></i><span id="airTitle">Qualidade do Ar</span></h3>
                         <div class="glass rounded-2xl p-8 text-center relative overflow-hidden">
                             <div class="relative z-10">
                                 <div id="aqiCircle" class="w-32 h-32 rounded-full border-4 mx-auto flex items-center justify-center mb-4 transition-all">
-                                    <div>
-                                        <p id="aqiValue" class="text-4xl font-bold"></p>
-                                        <p class="text-xs text-gray-400">AQI</p>
-                                    </div>
+                                    <div><p id="aqiValue" class="text-4xl font-bold"></p><p class="text-xs" style="color:var(--text-muted)">AQI</p></div>
                                 </div>
                                 <p id="aqiStatus" class="text-xl font-semibold mb-2"></p>
-                                <p id="aqiDesc" class="text-sm text-gray-400"></p>
+                                <p id="aqiDesc" class="text-sm" style="color:var(--text-muted)"></p>
                             </div>
                         </div>
-                        
-                        <!-- Componentes do Ar -->
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                            <div class="glass-card rounded-xl p-4">
-                                <p class="text-gray-400 text-xs mb-1">CO (Monóxido)</p>
-                                <p id="coVal" class="text-lg font-semibold"></p>
-                                <p class="text-xs text-gray-500">μg/m³</p>
-                            </div>
-                            <div class="glass-card rounded-xl p-4">
-                                <p class="text-gray-400 text-xs mb-1">NO (Óxido Nitroso)</p>
-                                <p id="noVal" class="text-lg font-semibold"></p>
-                                <p class="text-xs text-gray-500">μg/m³</p>
-                            </div>
-                            <div class="glass-card rounded-xl p-4">
-                                <p class="text-gray-400 text-xs mb-1">NO₂ (Dióxido Nitroso)</p>
-                                <p id="no2Val" class="text-lg font-semibold"></p>
-                                <p class="text-xs text-gray-500">μg/m³</p>
-                            </div>
-                            <div class="glass-card rounded-xl p-4">
-                                <p class="text-gray-400 text-xs mb-1">O₃ (Ozônio)</p>
-                                <p id="o3Val" class="text-lg font-semibold"></p>
-                                <p class="text-xs text-gray-500">μg/m³</p>
-                            </div>
-                            <div class="glass-card rounded-xl p-4">
-                                <p class="text-gray-400 text-xs mb-1">SO₂ (Dióxido Enxofre)</p>
-                                <p id="so2Val" class="text-lg font-semibold"></p>
-                                <p class="text-xs text-gray-500">μg/m³</p>
-                            </div>
-                            <div class="glass-card rounded-xl p-4">
-                                <p class="text-gray-400 text-xs mb-1">PM2.5</p>
-                                <p id="pm25Val" class="text-lg font-semibold"></p>
-                                <p class="text-xs text-gray-500">μg/m³</p>
-                            </div>
-                            <div class="glass-card rounded-xl p-4">
-                                <p class="text-gray-400 text-xs mb-1">PM10</p>
-                                <p id="pm10Val" class="text-lg font-semibold"></p>
-                                <p class="text-xs text-gray-500">μg/m³</p>
-                            </div>
-                            <div class="glass-card rounded-xl p-4">
-                                <p class="text-gray-400 text-xs mb-1">NH₃ (Amônia)</p>
-                                <p id="nh3Val" class="text-lg font-semibold"></p>
-                                <p class="text-xs text-gray-500">μg/m³</p>
-                            </div>
+                            <div class="glass-card rounded-xl p-4"><p class="text-xs mb-1" style="color:var(--text-muted)">CO</p><p id="coVal" class="text-lg font-semibold"></p><p class="text-xs" style="color:var(--text-muted)">ug/m3</p></div>
+                            <div class="glass-card rounded-xl p-4"><p class="text-xs mb-1" style="color:var(--text-muted)">NO</p><p id="noVal" class="text-lg font-semibold"></p><p class="text-xs" style="color:var(--text-muted)">ug/m3</p></div>
+                            <div class="glass-card rounded-xl p-4"><p class="text-xs mb-1" style="color:var(--text-muted)">NO2</p><p id="no2Val" class="text-lg font-semibold"></p><p class="text-xs" style="color:var(--text-muted)">ug/m3</p></div>
+                            <div class="glass-card rounded-xl p-4"><p class="text-xs mb-1" style="color:var(--text-muted)">O3</p><p id="o3Val" class="text-lg font-semibold"></p><p class="text-xs" style="color:var(--text-muted)">ug/m3</p></div>
+                            <div class="glass-card rounded-xl p-4"><p class="text-xs mb-1" style="color:var(--text-muted)">SO2</p><p id="so2Val" class="text-lg font-semibold"></p><p class="text-xs" style="color:var(--text-muted)">ug/m3</p></div>
+                            <div class="glass-card rounded-xl p-4"><p class="text-xs mb-1" style="color:var(--text-muted)">PM2.5</p><p id="pm25Val" class="text-lg font-semibold"></p><p class="text-xs" style="color:var(--text-muted)">ug/m3</p></div>
+                            <div class="glass-card rounded-xl p-4"><p class="text-xs mb-1" style="color:var(--text-muted)">PM10</p><p id="pm10Val" class="text-lg font-semibold"></p><p class="text-xs" style="color:var(--text-muted)">ug/m3</p></div>
+                            <div class="glass-card rounded-xl p-4"><p class="text-xs mb-1" style="color:var(--text-muted)">NH3</p><p id="nh3Val" class="text-lg font-semibold"></p><p class="text-xs" style="color:var(--text-muted)">ug/m3</p></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Página 5: Sol & Lua -->
                 <div id="page-sun" class="page">
                     <div id="sunEmpty" class="text-center py-20">
-                        <i class="fas fa-sun text-6xl text-white/20 mb-4"></i>
-                        <p class="text-gray-400 text-lg">Busque uma cidade para ver dados solares</p>
+                        <i class="fas fa-sun text-6xl mb-4" style="color:var(--text-muted);opacity:0.3"></i>
+                        <p class="text-lg" id="sunEmptyText" style="color:var(--text-muted)">Busque uma cidade</p>
                     </div>
-                    
                     <div id="sunContent" class="hidden space-y-4">
-                        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
-                            <i class="fas fa-sun text-yellow-400"></i>
-                            Sol & Horários
-                        </h3>
-                        
-                        <!-- Nascer e Pôr do Sol -->
+                        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="fas fa-sun" style="color:#fbbf24"></i><span id="sunTitle">Sol</span></h3>
                         <div class="glass rounded-2xl p-6">
-                            <div class="sun-path mb-4">
-                                <div class="sun-arc"></div>
-                                <div id="sunPosition" class="sun-dot" style="left: 50%; top: 100px;"></div>
-                            </div>
-                            
+                            <div class="sun-path mb-4"><div class="sun-arc"></div><div id="sunPosition" class="sun-dot" style="left:50%;top:100px"></div></div>
                             <div class="flex justify-between items-center">
-                                <div class="text-center">
-                                    <i class="fas fa-sun text-yellow-400 text-2xl mb-1"></i>
-                                    <p class="text-gray-400 text-xs">Nascer do Sol</p>
-                                    <p id="sunrise" class="text-xl font-bold"></p>
-                                </div>
-                                <div class="text-center">
-                                    <i class="fas fa-moon text-gray-300 text-2xl mb-1"></i>
-                                    <p class="text-gray-400 text-xs">Pôr do Sol</p>
-                                    <p id="sunset" class="text-xl font-bold"></p>
-                                </div>
+                                <div class="text-center"><i class="fas fa-sun text-2xl mb-1" style="color:#fbbf24"></i><p class="text-xs" id="sunriseLabel" style="color:var(--text-muted)">Nascer</p><p id="sunrise" class="text-xl font-bold"></p></div>
+                                <div class="text-center"><i class="fas fa-moon text-2xl mb-1" style="color:var(--text-secondary)"></i><p class="text-xs" id="sunsetLabel" style="color:var(--text-muted)">Por</p><p id="sunset" class="text-xl font-bold"></p></div>
                             </div>
-                            
-                            <div class="mt-4 pt-4 border-t border-white/10 flex justify-between text-sm">
-                                <span class="text-gray-400">Duração do dia:</span>
-                                <span id="dayDuration" class="font-semibold"></span>
-                            </div>
+                            <div class="mt-4 pt-4 border-t flex justify-between text-sm" style="border-color:var(--border-color)"><span style="color:var(--text-muted)" id="dayDurationLabel">Duracao:</span><span id="dayDuration" class="font-semibold"></span></div>
                         </div>
-                        
-                        <!-- Informações Adicionais -->
                         <div class="grid grid-cols-2 gap-3">
-                            <div class="glass-card rounded-xl p-4 text-center">
-                                <i class="fas fa-clock text-orange-400 text-2xl mb-2"></i>
-                                <p class="text-gray-400 text-xs">Hora Local</p>
-                                <p id="localTimeDetail" class="text-lg font-semibold"></p>
-                            </div>
-                            <div class="glass-card rounded-xl p-4 text-center">
-                                <i class="fas fa-globe text-blue-400 text-2xl mb-2"></i>
-                                <p class="text-gray-400 text-xs">Fuso Horário</p>
-                                <p id="timezone" class="text-lg font-semibold"></p>
-                            </div>
-                            <div class="glass-card rounded-xl p-4 text-center">
-                                <i class="fas fa-tachometer-alt text-green-400 text-2xl mb-2"></i>
-                                <p class="text-gray-400 text-xs">Nível do Mar</p>
-                                <p id="seaLevel" class="text-lg font-semibold"></p>
-                            </div>
-                            <div class="glass-card rounded-xl p-4 text-center">
-                                <i class="fas fa-mountain text-gray-400 text-2xl mb-2"></i>
-                                <p class="text-gray-400 text-xs">Altitude (aprox.)</p>
-                                <p id="altitude" class="text-lg font-semibold">--</p>
-                            </div>
+                            <div class="glass-card rounded-xl p-4 text-center"><i class="fas fa-clock text-2xl mb-2" style="color:#fb923c"></i><p class="text-xs" id="localTimeLabel" style="color:var(--text-muted)">Hora Local</p><p id="localTimeDetail" class="text-lg font-semibold"></p></div>
+                            <div class="glass-card rounded-xl p-4 text-center"><i class="fas fa-globe text-2xl mb-2" style="color:var(--accent)"></i><p class="text-xs" id="timezoneLabel" style="color:var(--text-muted)">Fuso</p><p id="timezone" class="text-lg font-semibold"></p></div>
+                            <div class="glass-card rounded-xl p-4 text-center"><i class="fas fa-tachometer-alt text-2xl mb-2" style="color:#4ade80"></i><p class="text-xs" id="seaLevelLabel" style="color:var(--text-muted)">Nivel do Mar</p><p id="seaLevel" class="text-lg font-semibold"></p></div>
+                            <div class="glass-card rounded-xl p-4 text-center"><i class="fas fa-mountain text-2xl mb-2" style="color:var(--text-secondary)"></i><p class="text-xs" id="altitudeLabel" style="color:var(--text-muted)">Altitude</p><p id="altitude" class="text-lg font-semibold">--</p></div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </main>
 
-        <!-- Footer -->
-        <footer class="glass border-t border-white/5 py-4 text-center text-xs text-gray-500">
-            <p>Dados fornecidos por OpenWeatherMap • <span id="lastUpdate"></span></p>
+        <footer class="glass border-t py-4 text-center text-xs" style="border-color:var(--border-color);color:var(--text-muted)">
+            <p>OpenWeatherMap • <span id="lastUpdate"></span></p>
         </footer>
     </div>
+<script>
+const API_KEY = '33d676110112b1214389d077495057b7';
+const BASE_URL = 'https://api.openweathermap.org/data/2.5';
+const GEO_URL = 'https://api.openweathermap.org/geo/1.0';
+const AIR_URL = 'https://api.openweathermap.org/data/2.5/air_pollution';
 
-    <script>
-        // ============ CONFIGURAÇÃO ============
-        const API_KEY = '33d676110112b1214389d077495057b7';
-        const BASE_URL = 'https://api.openweathermap.org/data/2.5';
-        const GEO_URL = 'https://api.openweathermap.org/geo/1.0';
-        const AIR_URL = 'https://api.openweathermap.org/data/2.5/air_pollution';
-        
-        let currentData = null;
-        let forecastData = null;
-        let airData = null;
-        let currentCity = null;
-        let favorites = JSON.parse(localStorage.getItem('weatherFavorites') || '[]');
+let currentData = null, forecastData = null, airData = null, currentCity = null;
+let favorites = JSON.parse(localStorage.getItem('weatherFavorites') || '[]');
+let currentLang = localStorage.getItem('weatherLang') || 'pt';
+let isDark = localStorage.getItem('weatherTheme') !== 'light';
 
-        // ============ NAVEGAÇÃO ============
-        function showPage(pageId) {
-            // Esconde todas as páginas
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            
-            // Mostra a página selecionada
-            document.getElementById(`page-${pageId}`).classList.add('active');
-            document.getElementById(`nav-${pageId}`).classList.add('active');
-        }
+const i18n = {
+    pt: {
+        settings: 'Configuracoes', lang: 'Idioma', theme: 'Tema', dark: 'Escuro', light: 'Claro',
+        search: 'Buscar', searchPlaceholder: 'Buscar qualquer cidade...', locate: 'Localizacao',
+        navCurrent: 'Clima', navHourly: 'Horas', navForecast: '5 Dias', navDetails: 'Detalhes', navAir: 'Ar', navSun: 'Sol',
+        emptyCurrent: 'Busque uma cidade', emptyHourly: 'Busque uma cidade', emptyForecast: 'Busque uma cidade', emptyDetails: 'Busque uma cidade', emptyAir: 'Busque uma cidade', emptySun: 'Busque uma cidade',
+        hourlyTitle: 'Proximas 24 Horas', forecastTitle: 'Previsao 5 Dias', detailsTitle: 'Detalhes', airTitle: 'Qualidade do Ar', sunTitle: 'Sol',
+        min: 'Min', max: 'Max', humidity: 'Umidade', pressure: 'Pressao', wind: 'Vento', visibility: 'Visibilidade',
+        feelsLike: 'Sensacao', feelsLikeDesc: 'Baseada na umidade e vento', clouds: 'Nuvens', gusts: 'Rajadas', gustsDesc: 'Velocidade maxima', rain: 'Chuva (1h)', rainDesc: 'Volume',
+        detailPressure: 'Pressao', detailWind: 'Vento', detailVisibility: 'Visibilidade', detailHumidity: 'Umidade',
+        sunrise: 'Nascer', sunset: 'Por', dayDuration: 'Duracao', localTime: 'Hora Local', timezone: 'Fuso', seaLevel: 'Nivel do Mar', altitude: 'Altitude',
+        chartTitle: 'Variacao de Temperatura', pressureStatus: { low: 'Baixa - Instavel', normal: 'Normal', high: 'Alta - Estavel' },
+        visibilityStatus: { veryBad: 'Muito ruim', bad: 'Ruim', moderate: 'Moderada', good: 'Boa' },
+        aqi: ['', 'Boa', 'Razoavel', 'Moderada', 'Ruim', 'Muito Ruim'],
+        aqiDesc: ['', 'Qualidade satisfatoria', 'Aceitavel para grupos sensiveis', 'Problemas para grupos sensiveis', 'Problemas para todos', 'Efeitos graves para todos'],
+        updated: 'Atualizado em'
+    },
+    en: {
+        settings: 'Settings', lang: 'Language', theme: 'Theme', dark: 'Dark', light: 'Light',
+        search: 'Search', searchPlaceholder: 'Search any city...', locate: 'Location',
+        navCurrent: 'Weather', navHourly: 'Hours', navForecast: '5 Days', navDetails: 'Details', navAir: 'Air', navSun: 'Sun',
+        emptyCurrent: 'Search for a city', emptyHourly: 'Search for a city', emptyForecast: 'Search for a city', emptyDetails: 'Search for a city', emptyAir: 'Search for a city', emptySun: 'Search for a city',
+        hourlyTitle: 'Next 24 Hours', forecastTitle: '5 Day Forecast', detailsTitle: 'Details', airTitle: 'Air Quality', sunTitle: 'Sun',
+        min: 'Min', max: 'Max', humidity: 'Humidity', pressure: 'Pressure', wind: 'Wind', visibility: 'Visibility',
+        feelsLike: 'Feels Like', feelsLikeDesc: 'Based on humidity and wind', clouds: 'Clouds', gusts: 'Gusts', gustsDesc: 'Max gust speed', rain: 'Rain (1h)', rainDesc: 'Volume',
+        detailPressure: 'Pressure', detailWind: 'Wind', detailVisibility: 'Visibility', detailHumidity: 'Humidity',
+        sunrise: 'Sunrise', sunset: 'Sunset', dayDuration: 'Day Length', localTime: 'Local Time', timezone: 'Timezone', seaLevel: 'Sea Level', altitude: 'Altitude',
+        chartTitle: 'Temperature Variation', pressureStatus: { low: 'Low - Unstable', normal: 'Normal', high: 'High - Stable' },
+        visibilityStatus: { veryBad: 'Very poor', bad: 'Poor', moderate: 'Moderate', good: 'Good' },
+        aqi: ['', 'Good', 'Fair', 'Moderate', 'Poor', 'Very Poor'],
+        aqiDesc: ['', 'Satisfactory air quality', 'Acceptable for sensitive groups', 'Issues for sensitive groups', 'Health issues for all', 'Severe health effects for all'],
+        updated: 'Updated at'
+    }
+};
 
-        // ============ BUSCA ============
-        async function searchCity() {
-            const city = document.getElementById('cityInput').value.trim();
-            if (!city) return;
-            
-            setLoading(true);
-            
+function t(key) { return i18n[currentLang][key] || key; }
+
+function init() {
+    if (!isDark) document.body.classList.add('light');
+    document.getElementById('themeToggle').classList.toggle('on', !isDark);
+    document.getElementById('themeDesc').textContent = isDark ? t('dark') : t('light');
+    document.getElementById('btn-pt').classList.toggle('active', currentLang === 'pt');
+    document.getElementById('btn-en').classList.toggle('active', currentLang === 'en');
+    updateAllTexts();
+    updateFavoritesUI();
+}
+
+function updateAllTexts() {
+    document.getElementById('settingsTitle').textContent = '⚙️ ' + t('settings');
+    document.getElementById('langLabel').textContent = t('lang');
+    document.getElementById('themeLabel').textContent = t('theme');
+    document.getElementById('themeDesc').textContent = isDark ? t('dark') : t('light');
+    document.getElementById('searchBtnText').textContent = t('search');
+    document.getElementById('cityInput').placeholder = t('searchPlaceholder');
+
+    document.getElementById('nav-current-text').textContent = t('navCurrent');
+    document.getElementById('nav-hourly-text').textContent = t('navHourly');
+    document.getElementById('nav-forecast-text').textContent = t('navForecast');
+    document.getElementById('nav-details-text').textContent = t('navDetails');
+    document.getElementById('nav-air-text').textContent = t('navAir');
+    document.getElementById('nav-sun-text').textContent = t('navSun');
+
+    document.getElementById('currentEmptyText').textContent = t('emptyCurrent');
+    document.getElementById('hourlyEmptyText').textContent = t('emptyHourly');
+    document.getElementById('forecastEmptyText').textContent = t('emptyForecast');
+    document.getElementById('detailsEmptyText').textContent = t('emptyDetails');
+    document.getElementById('airEmptyText').textContent = t('emptyAir');
+    document.getElementById('sunEmptyText').textContent = t('emptySun');
+
+    document.getElementById('hourlyTitle').textContent = t('hourlyTitle');
+    document.getElementById('forecastTitle').textContent = t('forecastTitle');
+    document.getElementById('detailsTitle').textContent = t('detailsTitle');
+    document.getElementById('airTitle').textContent = t('airTitle');
+    document.getElementById('sunTitle').textContent = t('sunTitle');
+    document.getElementById('chartTitle').textContent = t('chartTitle');
+
+    document.getElementById('minLabel').textContent = t('min');
+    document.getElementById('maxLabel').textContent = t('max');
+    document.getElementById('humidityLabel').textContent = t('humidity');
+    document.getElementById('pressureLabel').textContent = t('pressure');
+    document.getElementById('windLabel').textContent = t('wind');
+    document.getElementById('visibilityLabel').textContent = t('visibility');
+    document.getElementById('feelsLikeLabel').textContent = t('feelsLike');
+    document.getElementById('feelsLikeDesc').textContent = t('feelsLikeDesc');
+    document.getElementById('detailHumidityLabel').textContent = t('humidity');
+    document.getElementById('detailPressureLabel').textContent = t('detailPressure');
+    document.getElementById('detailWindLabel').textContent = t('detailWind');
+    document.getElementById('detailVisibilityLabel').textContent = t('detailVisibility');
+    document.getElementById('cloudsLabel').textContent = t('clouds');
+    document.getElementById('gustsLabel').textContent = t('gusts');
+    document.getElementById('gustsDesc').textContent = t('gustsDesc');
+    document.getElementById('rainLabel').textContent = t('rain');
+    document.getElementById('rainDesc').textContent = t('rainDesc');
+    document.getElementById('sunriseLabel').textContent = t('sunrise');
+    document.getElementById('sunsetLabel').textContent = t('sunset');
+    document.getElementById('dayDurationLabel').textContent = t('dayDuration') + ':';
+    document.getElementById('localTimeLabel').textContent = t('localTime');
+    document.getElementById('timezoneLabel').textContent = t('timezone');
+    document.getElementById('seaLevelLabel').textContent = t('seaLevel');
+    document.getElementById('altitudeLabel').textContent = t('altitude');
+
+    if (currentData) updateUI();
+}
+
+function toggleSettings() { document.getElementById('settingsModal').classList.toggle('open'); }
+function closeSettings(e) { if (e.target === document.getElementById('settingsModal')) toggleSettings(); }
+
+function setLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('weatherLang', lang);
+    document.getElementById('btn-pt').classList.toggle('active', lang === 'pt');
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    updateAllTexts();
+}
+
+function toggleTheme() {
+    isDark = !isDark;
+    document.body.classList.toggle('light', !isDark);
+    document.getElementById('themeToggle').classList.toggle('on', !isDark);
+    localStorage.setItem('weatherTheme', isDark ? 'dark' : 'light');
+    document.getElementById('themeDesc').textContent = isDark ? t('dark') : t('light');
+}
+
+function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-' + pageId).classList.add('active');
+    document.getElementById('nav-' + pageId).classList.add('active');
+}
+
+async function searchCity() {
+    const city = document.getElementById('cityInput').value.trim();
+    if (!city) return;
+    setLoading(true);
+    try {
+        const geoRes = await fetch(GEO_URL + '/direct?q=' + encodeURIComponent(city) + '&limit=1&appid=' + API_KEY);
+        const geoData = await geoRes.json();
+        if (!geoData.length) { alert(currentLang === 'pt' ? 'Cidade nao encontrada!' : 'City not found!'); setLoading(false); return; }
+        const { lat, lon, name, country, state } = geoData[0];
+        currentCity = { name, country, state, lat, lon };
+        await Promise.all([fetchCurrentWeather(lat, lon), fetchForecast(lat, lon), fetchAirQuality(lat, lon)]);
+        updateUI();
+    } catch (error) { alert(currentLang === 'pt' ? 'Erro ao buscar dados.' : 'Error fetching data.'); }
+    finally { setLoading(false); }
+}
+
+async function fetchCurrentWeather(lat, lon) {
+    const res = await fetch(BASE_URL + '/weather?lat=' + lat + '&lon=' + lon + '&appid=' + API_KEY + '&units=metric&lang=' + (currentLang === 'pt' ? 'pt_br' : 'en'));
+    currentData = await res.json();
+}
+
+async function fetchForecast(lat, lon) {
+    const res = await fetch(BASE_URL + '/forecast?lat=' + lat + '&lon=' + lon + '&appid=' + API_KEY + '&units=metric&lang=' + (currentLang === 'pt' ? 'pt_br' : 'en'));
+    forecastData = await res.json();
+}
+
+async function fetchAirQuality(lat, lon) {
+    const res = await fetch(AIR_URL + '?lat=' + lat + '&lon=' + lon + '&appid=' + API_KEY);
+    airData = await res.json();
+}
+
+function getLocation() {
+    if (!navigator.geolocation) { alert(currentLang === 'pt' ? 'Geolocalizacao nao suportada.' : 'Geolocation not supported.'); return; }
+    setLoading(true);
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+        try {
+            const res = await fetch(GEO_URL + '/reverse?lat=' + pos.coords.latitude + '&lon=' + pos.coords.longitude + '&limit=1&appid=' + API_KEY);
+            const data = await res.json();
+            if (data.length) { document.getElementById('cityInput').value = data[0].name; await searchCity(); }
+        } catch (e) { alert('Error'); setLoading(false); }
+    }, () => { alert(currentLang === 'pt' ? 'Nao foi possivel obter localizacao.' : 'Could not get location.'); setLoading(false); });
+}
+
+function updateUI() {
+    if (!currentData) return;
+    document.getElementById('cityInfo').classList.remove('hidden');
+    document.getElementById('cityName').textContent = currentCity.name;
+    document.getElementById('countryName').textContent = (currentCity.state ? currentCity.state + ', ' : '') + getCountryName(currentCity.country);
+    document.getElementById('latVal').textContent = currentCity.lat.toFixed(4);
+    document.getElementById('lonVal').textContent = currentCity.lon.toFixed(4);
+
+    const timezone = currentData.timezone;
+    const localDate = new Date((currentData.dt + timezone) * 1000);
+    const h = localDate.getUTCHours().toString().padStart(2, '0');
+    const m = localDate.getUTCMinutes().toString().padStart(2, '0');
+    document.getElementById('localTime').textContent = '🕐 ' + h + ':' + m + ' (' + (currentLang === 'pt' ? 'hora local' : 'local time') + ')';
+    document.getElementById('localTimeDetail').textContent = h + ':' + m;
+    document.getElementById('timezone').textContent = 'UTC' + (timezone >= 0 ? '+' : '') + (timezone / 3600);
+
+    updateFavoritesUI();
+
+    // Current
+    document.getElementById('currentEmpty').classList.add('hidden');
+    document.getElementById('currentContent').classList.remove('hidden');
+    document.getElementById('weatherIcon').src = 'https://openweathermap.org/img/wn/' + currentData.weather[0].icon + '@4x.png';
+    document.getElementById('currentTemp').textContent = Math.round(currentData.main.temp) + '°C';
+    document.getElementById('weatherDesc').textContent = currentData.weather[0].description;
+    document.getElementById('tempMin').textContent = Math.round(currentData.main.temp_min);
+    document.getElementById('tempMax').textContent = Math.round(currentData.main.temp_max);
+    document.getElementById('feelsLike').textContent = t('feelsLike') + ' ' + Math.round(currentData.main.feels_like) + '°C';
+    document.getElementById('humidity').textContent = currentData.main.humidity + '%';
+    document.getElementById('pressure').textContent = currentData.main.pressure + ' hPa';
+    document.getElementById('windSpeed').textContent = Math.round(currentData.wind.speed * 3.6) + ' km/h';
+    document.getElementById('visibility').textContent = (currentData.visibility / 1000).toFixed(1) + ' km';
+
+    // Hourly
+    document.getElementById('hourlyEmpty').classList.add('hidden');
+    document.getElementById('hourlyContent').classList.remove('hidden');
+    updateHourly();
+
+    // Forecast
+    document.getElementById('forecastEmpty').classList.add('hidden');
+    document.getElementById('forecastContent').classList.remove('hidden');
+    updateForecast();
+
+    // Details
+    document.getElementById('detailsEmpty').classList.add('hidden');
+    document.getElementById('detailsContent').classList.remove('hidden');
+    document.getElementById('detailFeelsLike').textContent = Math.round(currentData.main.feels_like) + '°C';
+    document.getElementById('detailHumidity').textContent = currentData.main.humidity + '%';
+    document.getElementById('humidityBar').style.width = currentData.main.humidity + '%';
+    document.getElementById('detailPressure').textContent = currentData.main.pressure + ' hPa';
+    const pressure = currentData.main.pressure;
+    let pStatus = pressure < 1000 ? t('pressureStatus').low : pressure > 1020 ? t('pressureStatus').high : t('pressureStatus').normal;
+    document.getElementById('pressureStatus').textContent = pStatus;
+    document.getElementById('pressureStatus').style.color = pressure < 1000 ? '#fbbf24' : pressure > 1020 ? '#4ade80' : 'var(--text-muted)';
+    document.getElementById('detailWind').textContent = Math.round(currentData.wind.speed * 3.6) + ' km/h';
+    document.getElementById('windDir').textContent = getWindDirection(currentData.wind.deg);
+    document.getElementById('windDirIcon').style.transform = 'rotate(' + currentData.wind.deg + 'deg)';
+    document.getElementById('detailVisibility').textContent = (currentData.visibility / 1000).toFixed(1) + ' km';
+    const vis = currentData.visibility;
+    let vStatus = vis < 1000 ? t('visibilityStatus').veryBad : vis < 5000 ? t('visibilityStatus').bad : vis < 10000 ? t('visibilityStatus').moderate : t('visibilityStatus').good;
+    document.getElementById('visibilityStatus').textContent = vStatus;
+    document.getElementById('detailClouds').textContent = currentData.clouds.all + '%';
+    document.getElementById('cloudsBar').style.width = currentData.clouds.all + '%';
+    document.getElementById('detailGusts').textContent = currentData.wind.gust ? Math.round(currentData.wind.gust * 3.6) + ' km/h' : '--';
+    document.getElementById('detailRain').textContent = currentData.rain ? (currentData.rain['1h'] || 0) + ' mm' : '0 mm';
+
+    // Air
+    document.getElementById('airEmpty').classList.add('hidden');
+    document.getElementById('airContent').classList.remove('hidden');
+    updateAirQuality();
+
+    // Sun
+    document.getElementById('sunEmpty').classList.add('hidden');
+    document.getElementById('sunContent').classList.remove('hidden');
+    const sunrise = new Date((currentData.sys.sunrise + timezone) * 1000);
+    const sunset = new Date((currentData.sys.sunset + timezone) * 1000);
+    document.getElementById('sunrise').textContent = sunrise.getUTCHours().toString().padStart(2, '0') + ':' + sunrise.getUTCMinutes().toString().padStart(2, '0');
+    document.getElementById('sunset').textContent = sunset.getUTCHours().toString().padStart(2, '0') + ':' + sunset.getUTCMinutes().toString().padStart(2, '0');
+    const dayDur = Math.round((currentData.sys.sunset - currentData.sys.sunrise) / 3600);
+    const dayMin = Math.round(((currentData.sys.sunset - currentData.sys.sunrise) % 3600) / 60);
+    document.getElementById('dayDuration').textContent = dayDur + 'h ' + dayMin + 'min';
+    const now = currentData.dt;
+    const totalDay = currentData.sys.sunset - currentData.sys.sunrise;
+    const elapsed = now - currentData.sys.sunrise;
+    const sunPercent = Math.max(0, Math.min(100, (elapsed / totalDay) * 100));
+    const sunX = 10 + (sunPercent * 0.8);
+    const sunY = 100 - Math.sin((sunPercent / 100) * Math.PI) * 80;
+    document.getElementById('sunPosition').style.left = sunX + '%';
+    document.getElementById('sunPosition').style.top = sunY + 'px';
+    document.getElementById('seaLevel').textContent = currentData.main.sea_level ? currentData.main.sea_level + ' hPa' : currentData.main.pressure + ' hPa';
+    document.getElementById('lastUpdate').textContent = t('updated') + ' ' + new Date(currentData.dt * 1000).toLocaleString(currentLang === 'pt' ? 'pt-BR' : 'en-US');
+}
+
+function updateHourly() {
+    const list = document.getElementById('hourlyList');
+    list.innerHTML = '';
+    if (!forecastData || !forecastData.list) return;
+
+    const next24 = forecastData.list.slice(0, 8);
+    next24.forEach(item => {
+        const date = new Date(item.dt * 1000);
+        const hour = date.getHours().toString().padStart(2, '0') + ':00';
+        const temp = Math.round(item.main.temp);
+        const pop = Math.round((item.pop || 0) * 100);
+        const icon = item.weather[0].icon;
+        const desc = item.weather[0].description;
+
+        const card = document.createElement('div');
+        card.className = 'hourly-card';
+        card.innerHTML = `
+            <p class="text-xs font-medium mb-2" style="color:var(--text-muted)">${hour}</p>
+            <img src="https://openweathermap.org/img/wn/${icon}@2x.png" class="w-10 h-10 mx-auto mb-2" alt="${desc}">
+            <p class="text-lg font-bold mb-1">${temp}°</p>
+            <p class="text-xs mb-2" style="color:var(--text-muted)">${desc}</p>
+            <div class="flex items-center gap-1 text-xs" style="color:#60a5fa">
+                <i class="fas fa-tint"></i>
+                <span>${pop}%</span>
+            </div>
+            <div class="rain-bar"><div class="rain-fill" style="width:${pop}%"></div></div>
+        `;
+        list.appendChild(card);
+    });
+}
+
+function updateForecast() {
+    const list = document.getElementById('forecastList');
+    list.innerHTML = '';
+    if (!forecastData || !forecastData.list) return;
+
+    const daily = {};
+    forecastData.list.forEach(item => {
+        const date = new Date(item.dt * 1000).toLocaleDateString(currentLang === 'pt' ? 'pt-BR' : 'en-US');
+        if (!daily[date]) daily[date] = [];
+        daily[date].push(item);
+    });
+
+    const days = Object.keys(daily).slice(0, 5);
+    const temps = [], labels = [];
+
+    days.forEach((day, idx) => {
+        const items = daily[day];
+        const temps_day = items.map(i => i.main.temp);
+        const min = Math.min(...temps_day);
+        const max = Math.max(...temps_day);
+        const avg = items[Math.floor(items.length / 2)];
+        const pop = Math.round((avg.pop || 0) * 100);
+
+        const dateObj = new Date(items[0].dt * 1000);
+        const dayName = idx === 0 ? (currentLang === 'pt' ? 'Hoje' : 'Today') : dateObj.toLocaleDateString(currentLang === 'pt' ? 'pt-BR' : 'en-US', { weekday: 'long' });
+
+        temps.push({ min, max, avg: (min + max) / 2 });
+        labels.push(dayName);
+
+        const div = document.createElement('div');
+        div.className = 'glass-card rounded-xl p-4 flex items-center justify-between forecast-item';
+        div.innerHTML = `
+            <div class="flex items-center gap-4">
+                <img src="https://openweathermap.org/img/wn/${avg.weather[0].icon}@2x.png" alt="${avg.weather[0].description}" class="w-12 h-12">
+                <div>
+                    <p class="font-semibold capitalize">${dayName}</p>
+                    <p class="text-xs capitalize" style="color:var(--text-muted)">${avg.weather[0].description}</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="text-lg font-bold">${Math.round(max)}° <span style="color:var(--text-muted)" class="text-sm">${Math.round(min)}°</span></p>
+                <p class="text-xs" style="color:var(--text-muted)">
+                    <i class="fas fa-tint" style="color:#60a5fa"></i> ${avg.main.humidity}% | 
+                    <i class="fas fa-wind"></i> ${Math.round(avg.wind.speed * 3.6)}km/h |
+                    <i class="fas fa-cloud-rain" style="color:#60a5fa"></i> ${pop}%
+                </p>
+            </div>
+        `;
+        list.appendChild(div);
+    });
+
+    const chart = document.getElementById('tempChart');
+    chart.innerHTML = '';
+    const maxTemp = Math.max(...temps.map(t => t.max));
+    const minTemp = Math.min(...temps.map(t => t.min));
+    const range = maxTemp - minTemp || 1;
+
+    temps.forEach((t, i) => {
+        const barContainer = document.createElement('div');
+        barContainer.className = 'flex flex-col items-center flex-1';
+        const barHeight = ((t.avg - minTemp) / range) * 120 + 40;
+        const barColor = t.avg > 25 ? 'bg-orange-400' : t.avg > 15 ? 'bg-yellow-400' : 'bg-blue-400';
+        barContainer.innerHTML = `<div class="text-xs mb-1" style="color:var(--text-muted)">${Math.round(t.avg)}°</div><div class="${barColor} rounded-t-lg w-full max-w-[40px] transition-all" style="height:${barHeight}px"></div><div class="text-xs mt-2" style="color:var(--text-muted)">${labels[i]}</div>`;
+        chart.appendChild(barContainer);
+    });
+}
+
+function updateAirQuality() {
+    if (!airData || !airData.list || !airData.list.length) {
+        document.getElementById('aqiStatus').textContent = currentLang === 'pt' ? 'Dados indisponiveis' : 'Data unavailable';
+        return;
+    }
+    const aqi = airData.list[0].main.aqi;
+    const components = airData.list[0].components;
+    const aqiColors = ['', '#4ade80', '#fbbf24', '#f97316', '#f87171', '#a855f7'];
+
+    document.getElementById('aqiValue').textContent = aqi;
+    document.getElementById('aqiCircle').style.borderColor = aqiColors[aqi];
+    document.getElementById('aqiStatus').textContent = t('aqi')[aqi];
+    document.getElementById('aqiStatus').style.color = aqiColors[aqi];
+    document.getElementById('aqiDesc').textContent = t('aqiDesc')[aqi];
+
+    document.getElementById('coVal').textContent = Math.round(components.co);
+    document.getElementById('noVal').textContent = Math.round(components.no);
+    document.getElementById('no2Val').textContent = Math.round(components.no2);
+    document.getElementById('o3Val').textContent = Math.round(components.o3);
+    document.getElementById('so2Val').textContent = Math.round(components.so2);
+    document.getElementById('pm25Val').textContent = Math.round(components.pm2_5);
+    document.getElementById('pm10Val').textContent = Math.round(components.pm10);
+    document.getElementById('nh3Val').textContent = Math.round(components.nh3);
+}
+
+function toggleFavorite() {
+    if (!currentCity) return;
+    const key = currentCity.name + ',' + currentCity.country;
+    const idx = favorites.findIndex(f => f.key === key);
+    if (idx >= 0) favorites.splice(idx, 1);
+    else favorites.push({ key, name: currentCity.name, country: currentCity.country });
+    localStorage.setItem('weatherFavorites', JSON.stringify(favorites));
+    updateFavoritesUI();
+}
+
+function updateFavoritesUI() {
+    const container = document.getElementById('favorites');
+    const btn = document.getElementById('favBtn');
+    if (!currentCity) return;
+    const key = currentCity.name + ',' + currentCity.country;
+    const isFav = favorites.some(f => f.key === key);
+    btn.innerHTML = isFav ? '<i class="fas fa-star" style="color:#fbbf24"></i>' : '<i class="far fa-star"></i>';
+    if (favorites.length) {
+        container.classList.remove('hidden');
+        container.innerHTML = favorites.map(f => `<button onclick="document.getElementById('cityInput').value='${f.name}';searchCity()" class="px-3 py-1 rounded-full glass text-xs transition-all flex items-center gap-1" style="color:var(--text-secondary)"><i class="fas fa-star" style="color:#fbbf24;font-size:10px"></i>${f.name}</button>`).join('');
+    } else container.classList.add('hidden');
+}
+
+function setLoading(loading) {
+    document.getElementById('searchBtnText').classList.toggle('hidden', loading);
+    document.getElementById('searchLoader').classList.toggle('hidden', !loading);
+}
+
+function getWindDirection(deg) {
+    const dirs = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+    return dirs[Math.round(deg / 22.5) % 16];
+}
+
+function getCountryName(code) {
+    const names = { 'BR': 'Brasil', 'US': 'USA', 'AR': 'Argentina', 'CL': 'Chile', 'UY': 'Uruguai', 'PY': 'Paraguai', 'BO': 'Bolivia', 'PE': 'Peru', 'CO': 'Colombia', 'VE': 'Venezuela', 'EC': 'Equador', 'GY': 'Guiana', 'SR': 'Suriname', 'GF': 'Guiana Francesa', 'MX': 'Mexico', 'CA': 'Canada', 'ES': 'Espanha', 'PT': 'Portugal', 'FR': 'Franca', 'DE': 'Alemanha', 'IT': 'Italia', 'GB': 'UK', 'JP': 'Japao', 'CN': 'China', 'IN': 'India', 'AU': 'Australia', 'RU': 'Russia', 'ZA': 'Africa do Sul' };
+    return names[code] || code;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    init();
+    const input = document.getElementById('cityInput');
+    let debounceTimer;
+    input.addEventListener('input', (e) => {
+        clearTimeout(debounceTimer);
+        const val = e.target.value.trim();
+        if (val.length < 3) { document.getElementById('suggestions').classList.add('hidden'); return; }
+        debounceTimer = setTimeout(async () => {
             try {
-                // Busca coordenadas da cidade
-                const geoRes = await fetch(`${GEO_URL}/direct?q=${encodeURIComponent(city)}&limit=1&appid=${API_KEY}`);
-                const geoData = await geoRes.json();
-                
-                if (!geoData.length) {
-                    alert('Cidade não encontrada! Tente novamente.');
-                    setLoading(false);
-                    return;
-                }
-                
-                const { lat, lon, name, country, state } = geoData[0];
-                currentCity = { name, country, state, lat, lon };
-                
-                // Busca todos os dados em paralelo
-                await Promise.all([
-                    fetchCurrentWeather(lat, lon),
-                    fetchForecast(lat, lon),
-                    fetchAirQuality(lat, lon)
-                ]);
-                
-                updateUI();
-                
-            } catch (error) {
-                console.error(error);
-                alert('Erro ao buscar dados. Tente novamente.');
-            } finally {
-                setLoading(false);
-            }
-        }
-
-        async function fetchCurrentWeather(lat, lon) {
-            const res = await fetch(`${BASE_URL}/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=pt_br`);
-            currentData = await res.json();
-        }
-
-        async function fetchForecast(lat, lon) {
-            const res = await fetch(`${BASE_URL}/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=pt_br`);
-            forecastData = await res.json();
-        }
-
-        async function fetchAirQuality(lat, lon) {
-            const res = await fetch(`${AIR_URL}?lat=${lat}&lon=${lon}&appid=${API_KEY}`);
-            airData = await res.json();
-        }
-
-        // ============ GEOLOCALIZAÇÃO ============
-        function getLocation() {
-            if (!navigator.geolocation) {
-                alert('Geolocalização não suportada pelo navegador.');
-                return;
-            }
-            
-            setLoading(true);
-            navigator.geolocation.getCurrentPosition(
-                async (pos) => {
-                    const { latitude, longitude } = pos.coords;
-                    try {
-                        // Reverse geocoding
-                        const res = await fetch(`${GEO_URL}/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${API_KEY}`);
-                        const data = await res.json();
-                        
-                        if (data.length) {
-                            document.getElementById('cityInput').value = data[0].name;
-                            await searchCity();
-                        }
-                    } catch (e) {
-                        alert('Erro ao obter localização.');
-                        setLoading(false);
-                    }
-                },
-                () => {
-                    alert('Não foi possível obter sua localização.');
-                    setLoading(false);
-                }
-            );
-        }
-
-        // ============ ATUALIZAÇÃO DA UI ============
-        function updateUI() {
-            if (!currentData) return;
-            
-            // Info da cidade
-            document.getElementById('cityInfo').classList.remove('hidden');
-            document.getElementById('cityName').textContent = currentCity.name;
-            document.getElementById('countryName').textContent = 
-                `${currentCity.state ? currentCity.state + ', ' : ''}${getCountryName(currentCity.country)}`;
-            document.getElementById('latVal').textContent = currentCity.lat.toFixed(4);
-            document.getElementById('lonVal').textContent = currentCity.lon.toFixed(4);
-            
-            // Hora local
-            const timezone = currentData.timezone;
-            const localDate = new Date((currentData.dt + timezone) * 1000);
-            const hours = localDate.getUTCHours().toString().padStart(2, '0');
-            const minutes = localDate.getUTCMinutes().toString().padStart(2, '0');
-            document.getElementById('localTime').textContent = `🕐 ${hours}:${minutes} (hora local)`;
-            document.getElementById('localTimeDetail').textContent = `${hours}:${minutes}`;
-            document.getElementById('timezone').textContent = `UTC${timezone >= 0 ? '+' : ''}${timezone / 3600}`;
-            
-            // Atualiza favoritos
-            updateFavoritesUI();
-            
-            // Página 1: Clima Atual
-            document.getElementById('currentEmpty').classList.add('hidden');
-            document.getElementById('currentContent').classList.remove('hidden');
-            
-            document.getElementById('weatherIcon').src = 
-                `https://openweathermap.org/img/wn/${currentData.weather[0].icon}@4x.png`;
-            document.getElementById('currentTemp').textContent = Math.round(currentData.main.temp) + '°C';
-            document.getElementById('weatherDesc').textContent = currentData.weather[0].description;
-            document.getElementById('tempMin').textContent = Math.round(currentData.main.temp_min);
-            document.getElementById('tempMax').textContent = Math.round(currentData.main.temp_max);
-            document.getElementById('feelsLike').textContent = 
-                `Sensação térmica de ${Math.round(currentData.main.feels_like)}°C`;
-            
-            document.getElementById('humidity').textContent = currentData.main.humidity + '%';
-            document.getElementById('pressure').textContent = currentData.main.pressure + ' hPa';
-            document.getElementById('windSpeed').textContent = Math.round(currentData.wind.speed * 3.6) + ' km/h';
-            document.getElementById('visibility').textContent = (currentData.visibility / 1000).toFixed(1) + ' km';
-            
-            // Página 2: Previsão
-            document.getElementById('forecastEmpty').classList.add('hidden');
-            document.getElementById('forecastContent').classList.remove('hidden');
-            updateForecast();
-            
-            // Página 3: Detalhes
-            document.getElementById('detailsEmpty').classList.add('hidden');
-            document.getElementById('detailsContent').classList.remove('hidden');
-            
-            document.getElementById('detailFeelsLike').textContent = Math.round(currentData.main.feels_like) + '°C';
-            document.getElementById('detailHumidity').textContent = currentData.main.humidity + '%';
-            document.getElementById('humidityBar').style.width = currentData.main.humidity + '%';
-            
-            document.getElementById('detailPressure').textContent = currentData.main.pressure + ' hPa';
-            const pressure = currentData.main.pressure;
-            let pStatus = pressure < 1000 ? 'Baixa - Possível instabilidade' : 
-                         pressure > 1020 ? 'Alta - Tempo estável' : 'Normal';
-            document.getElementById('pressureStatus').textContent = pStatus;
-            document.getElementById('pressureStatus').className = 'text-xs mt-2 ' + 
-                (pressure < 1000 ? 'text-yellow-400' : pressure > 1020 ? 'text-green-400' : 'text-gray-400');
-            
-            document.getElementById('detailWind').textContent = Math.round(currentData.wind.speed * 3.6) + ' km/h';
-            document.getElementById('windDir').textContent = getWindDirection(currentData.wind.deg);
-            document.getElementById('windDirIcon').style.transform = `rotate(${currentData.wind.deg}deg)`;
-            
-            document.getElementById('detailVisibility').textContent = (currentData.visibility / 1000).toFixed(1) + ' km';
-            const vis = currentData.visibility;
-            let vStatus = vis < 1000 ? 'Muito ruim' : vis < 5000 ? 'Ruim' : vis < 10000 ? 'Moderada' : 'Boa';
-            document.getElementById('visibilityStatus').textContent = 'Visibilidade ' + vStatus.toLowerCase();
-            
-            document.getElementById('detailClouds').textContent = currentData.clouds.all + '%';
-            document.getElementById('cloudsBar').style.width = currentData.clouds.all + '%';
-            
-            document.getElementById('detailGusts').textContent = currentData.wind.gust ? 
-                Math.round(currentData.wind.gust * 3.6) + ' km/h' : '--';
-            
-            document.getElementById('detailRain').textContent = currentData.rain ? 
-                (currentData.rain['1h'] || 0) + ' mm' : '0 mm';
-            
-            // Página 4: Qualidade do Ar
-            document.getElementById('airEmpty').classList.add('hidden');
-            document.getElementById('airContent').classList.remove('hidden');
-            updateAirQuality();
-            
-            // Página 5: Sol & Lua
-            document.getElementById('sunEmpty').classList.add('hidden');
-            document.getElementById('sunContent').classList.remove('hidden');
-            
-            const sunrise = new Date((currentData.sys.sunrise + timezone) * 1000);
-            const sunset = new Date((currentData.sys.sunset + timezone) * 1000);
-            
-            document.getElementById('sunrise').textContent = 
-                `${sunrise.getUTCHours().toString().padStart(2,'0')}:${sunrise.getUTCMinutes().toString().padStart(2,'0')}`;
-            document.getElementById('sunset').textContent = 
-                `${sunset.getUTCHours().toString().padStart(2,'0')}:${sunset.getUTCMinutes().toString().padStart(2,'0')}`;
-            
-            const dayDur = Math.round((currentData.sys.sunset - currentData.sys.sunrise) / 3600);
-            const dayMin = Math.round(((currentData.sys.sunset - currentData.sys.sunrise) % 3600) / 60);
-            document.getElementById('dayDuration').textContent = `${dayDur}h ${dayMin}min`;
-            
-            // Posição do sol (simplificada)
-            const now = currentData.dt;
-            const totalDay = currentData.sys.sunset - currentData.sys.sunrise;
-            const elapsed = now - currentData.sys.sunrise;
-            const sunPercent = Math.max(0, Math.min(100, (elapsed / totalDay) * 100));
-            const sunX = 10 + (sunPercent * 0.8); // 10% a 90%
-            const sunY = 100 - Math.sin((sunPercent / 100) * Math.PI) * 80;
-            document.getElementById('sunPosition').style.left = sunX + '%';
-            document.getElementById('sunPosition').style.top = sunY + 'px';
-            
-            document.getElementById('seaLevel').textContent = currentData.main.sea_level ? 
-                currentData.main.sea_level + ' hPa' : currentData.main.pressure + ' hPa';
-            
-            // Última atualização
-            const updateTime = new Date(currentData.dt * 1000);
-            document.getElementById('lastUpdate').textContent = 
-                `Atualizado em ${updateTime.toLocaleString('pt-BR')}`;
-        }
-
-        function updateForecast() {
-            const list = document.getElementById('forecastList');
-            list.innerHTML = '';
-            
-            if (!forecastData || !forecastData.list) return;
-            
-            // Agrupa por dia
-            const daily = {};
-            forecastData.list.forEach(item => {
-                const date = new Date(item.dt * 1000).toLocaleDateString('pt-BR');
-                if (!daily[date]) daily[date] = [];
-                daily[date].push(item);
-            });
-            
-            const days = Object.keys(daily).slice(0, 5);
-            const temps = [];
-            const labels = [];
-            
-            days.forEach((day, idx) => {
-                const items = daily[day];
-                const temps_day = items.map(i => i.main.temp);
-                const min = Math.min(...temps_day);
-                const max = Math.max(...temps_day);
-                const avg = items[Math.floor(items.length / 2)];
-                
-                const dateObj = new Date(items[0].dt * 1000);
-                const dayName = idx === 0 ? 'Hoje' : 
-                    dateObj.toLocaleDateString('pt-BR', { weekday: 'long' });
-                
-                temps.push({ min, max, avg: (min + max) / 2 });
-                labels.push(dayName);
-                
-                const div = document.createElement('div');
-                div.className = 'glass-card rounded-xl p-4 flex items-center justify-between forecast-item';
-                div.innerHTML = `
-                    <div class="flex items-center gap-4">
-                        <img src="https://openweathermap.org/img/wn/${avg.weather[0].icon}@2x.png" 
-                             alt="${avg.weather[0].description}" class="w-12 h-12">
-                        <div>
-                            <p class="font-semibold capitalize">${dayName}</p>
-                            <p class="text-xs text-gray-400 capitalize">${avg.weather[0].description}</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-lg font-bold">${Math.round(max)}° <span class="text-gray-500 text-sm">${Math.round(min)}°</span></p>
-                        <p class="text-xs text-gray-400">
-                            <i class="fas fa-tint"></i> ${avg.main.humidity}% | 
-                            <i class="fas fa-wind"></i> ${Math.round(avg.wind.speed * 3.6)}km/h
-                        </p>
-                    </div>
-                `;
-                list.appendChild(div);
-            });
-            
-            // Gráfico simples de barras com CSS
-            const chart = document.getElementById('tempChart');
-            chart.innerHTML = '';
-            const maxTemp = Math.max(...temps.map(t => t.max));
-            const minTemp = Math.min(...temps.map(t => t.min));
-            const range = maxTemp - minTemp || 1;
-            
-            temps.forEach((t, i) => {
-                const barContainer = document.createElement('div');
-                barContainer.className = 'flex flex-col items-center flex-1';
-                
-                const barHeight = ((t.avg - minTemp) / range) * 120 + 40;
-                const barColor = t.avg > 25 ? 'bg-orange-400' : t.avg > 15 ? 'bg-yellow-400' : 'bg-blue-400';
-                
-                barContainer.innerHTML = `
-                    <div class="text-xs text-gray-400 mb-1">${Math.round(t.avg)}°</div>
-                    <div class="${barColor} rounded-t-lg w-full max-w-[40px] transition-all" style="height: ${barHeight}px"></div>
-                    <div class="text-xs text-gray-500 mt-2">${labels[i]}</div>
-                `;
-                chart.appendChild(barContainer);
-            });
-        }
-
-        function updateAirQuality() {
-            if (!airData || !airData.list || !airData.list.length) {
-                document.getElementById('aqiStatus').textContent = 'Dados indisponíveis';
-                return;
-            }
-            
-            const aqi = airData.list[0].main.aqi;
-            const components = airData.list[0].components;
-            
-            const aqiTexts = ['', 'Boa', 'Razoável', 'Moderada', 'Ruim', 'Muito Ruim'];
-            const aqiColors = ['', '#4ade80', '#fbbf24', '#f97316', '#f87171', '#a855f7'];
-            const aqiDescs = [
-                '',
-                'A qualidade do ar é satisfatória.',
-                'Qualidade do ar aceitável, mas pode afetar grupos sensíveis.',
-                'Membros de grupos sensíveis podem ter problemas de saúde.',
-                'Todos podem começar a ter problemas de saúde.',
-                'Alerta de saúde: todos podem ter efeitos mais graves.'
-            ];
-            
-            document.getElementById('aqiValue').textContent = aqi;
-            document.getElementById('aqiCircle').style.borderColor = aqiColors[aqi];
-            document.getElementById('aqiStatus').textContent = aqiTexts[aqi];
-            document.getElementById('aqiStatus').style.color = aqiColors[aqi];
-            document.getElementById('aqiDesc').textContent = aqiDescs[aqi];
-            
-            document.getElementById('coVal').textContent = Math.round(components.co);
-            document.getElementById('noVal').textContent = Math.round(components.no);
-            document.getElementById('no2Val').textContent = Math.round(components.no2);
-            document.getElementById('o3Val').textContent = Math.round(components.o3);
-            document.getElementById('so2Val').textContent = Math.round(components.so2);
-            document.getElementById('pm25Val').textContent = Math.round(components.pm2_5);
-            document.getElementById('pm10Val').textContent = Math.round(components.pm10);
-            document.getElementById('nh3Val').textContent = Math.round(components.nh3);
-        }
-
-        // ============ FAVORITOS ============
-        function toggleFavorite() {
-            if (!currentCity) return;
-            
-            const key = `${currentCity.name},${currentCity.country}`;
-            const idx = favorites.findIndex(f => f.key === key);
-            
-            if (idx >= 0) {
-                favorites.splice(idx, 1);
-            } else {
-                favorites.push({ key, name: currentCity.name, country: currentCity.country });
-            }
-            
-            localStorage.setItem('weatherFavorites', JSON.stringify(favorites));
-            updateFavoritesUI();
-        }
-
-        function updateFavoritesUI() {
-            const container = document.getElementById('favorites');
-            const btn = document.getElementById('favBtn');
-            
-            if (!currentCity) return;
-            
-            const key = `${currentCity.name},${currentCity.country}`;
-            const isFav = favorites.some(f => f.key === key);
-            
-            btn.innerHTML = isFav ? '<i class="fas fa-star text-yellow-400"></i>' : '<i class="far fa-star"></i>';
-            
-            if (favorites.length) {
-                container.classList.remove('hidden');
-                container.innerHTML = favorites.map(f => `
-                    <button onclick="document.getElementById('cityInput').value='${f.name}';searchCity()" 
-                            class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-xs transition-all flex items-center gap-1">
-                        <i class="fas fa-star text-yellow-400 text-[10px]"></i>
-                        ${f.name}
-                    </button>
-                `).join('');
-            } else {
-                container.classList.add('hidden');
-            }
-        }
-
-        // ============ UTILITÁRIOS ============
-        function setLoading(loading) {
-            document.getElementById('searchBtnText').classList.toggle('hidden', loading);
-            document.getElementById('searchLoader').classList.toggle('hidden', !loading);
-        }
-
-        function getWindDirection(deg) {
-            const dirs = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
-            return dirs[Math.round(deg / 22.5) % 16];
-        }
-
-        function getCountryName(code) {
-            const names = {
-                'BR': 'Brasil', 'US': 'Estados Unidos', 'AR': 'Argentina', 'CL': 'Chile',
-                'UY': 'Uruguai', 'PY': 'Paraguai', 'BO': 'Bolívia', 'PE': 'Peru',
-                'CO': 'Colômbia', 'VE': 'Venezuela', 'EC': 'Equador', 'GY': 'Guiana',
-                'SR': 'Suriname', 'GF': 'Guiana Francesa', 'MX': 'México', 'CA': 'Canadá',
-                'ES': 'Espanha', 'PT': 'Portugal', 'FR': 'França', 'DE': 'Alemanha',
-                'IT': 'Itália', 'GB': 'Reino Unido', 'JP': 'Japão', 'CN': 'China',
-                'IN': 'Índia', 'AU': 'Austrália', 'RU': 'Rússia', 'ZA': 'África do Sul'
-            };
-            return names[code] || code;
-        }
-
-        // ============ INICIALIZAÇÃO ============
-        document.addEventListener('DOMContentLoaded', () => {
-            updateFavoritesUI();
-            
-            // Sugestões ao digitar
-            const input = document.getElementById('cityInput');
-            let debounceTimer;
-            
-            input.addEventListener('input', (e) => {
-                clearTimeout(debounceTimer);
-                const val = e.target.value.trim();
-                if (val.length < 3) {
-                    document.getElementById('suggestions').classList.add('hidden');
-                    return;
-                }
-                
-                debounceTimer = setTimeout(async () => {
-                    try {
-                        const res = await fetch(`${GEO_URL}/direct?q=${encodeURIComponent(val)}&limit=5&appid=${API_KEY}`);
-                        const data = await res.json();
-                        
-                        const sug = document.getElementById('suggestions');
-                        if (data.length) {
-                            sug.innerHTML = data.map(c => `
-                                <div onclick="document.getElementById('cityInput').value='${c.name}';document.getElementById('suggestions').classList.add('hidden');searchCity()" 
-                                     class="px-4 py-2 hover:bg-white/10 cursor-pointer text-sm text-gray-300 border-b border-white/5 last:border-0">
-                                    <i class="fas fa-map-marker-alt text-blue-400 mr-2"></i>
-                                    ${c.name}${c.state ? ', ' + c.state : ''}, ${getCountryName(c.country)}
-                                </div>
-                            `).join('');
-                            sug.classList.remove('hidden');
-                        } else {
-                            sug.classList.add('hidden');
-                        }
-                    } catch (e) {
-                        document.getElementById('suggestions').classList.add('hidden');
-                    }
-                }, 400);
-            });
-            
-            // Fecha sugestões ao clicar fora
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('.relative')) {
-                    document.getElementById('suggestions').classList.add('hidden');
-                }
-            });
-        });
-    </script>
+                const res = await fetch(GEO_URL + '/direct?q=' + encodeURIComponent(val) + '&limit=5&appid=' + API_KEY);
+                const data = await res.json();
+                const sug = document.getElementById('suggestions');
+                if (data.length) {
+                    sug.innerHTML = data.map(c => `<div onclick="document.getElementById('cityInput').value='${c.name}';document.getElementById('suggestions').classList.add('hidden');searchCity()" class="px-4 py-2 hover:bg-white/10 cursor-pointer text-sm border-b last:border-0" style="color:var(--text-secondary);border-color:var(--border-color)"><i class="fas fa-map-marker-alt mr-2" style="color:var(--accent)"></i>${c.name}${c.state ? ', ' + c.state : ''}, ${getCountryName(c.country)}</div>`).join('');
+                    sug.classList.remove('hidden');
+                } else sug.classList.add('hidden');
+            } catch (e) { document.getElementById('suggestions').classList.add('hidden'); }
+        }, 400);
+    });
+    document.addEventListener('click', (e) => { if (!e.target.closest('.relative')) document.getElementById('suggestions').classList.add('hidden'); });
+});
+</script>
 </body>
 </html>
